@@ -23,6 +23,14 @@ const userSchema = new mongoose.Schema(
       type: String,
       default: "React Native Developer",
     },
+    resetPasswordOtp: {
+      type: String,
+      default: null,
+    },
+    resetPasswordExpires: {
+      type: Date,
+      default: null,
+    },
   },
   { timestamps: true }
 );
