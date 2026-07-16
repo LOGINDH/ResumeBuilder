@@ -6,7 +6,6 @@ import {
   Alert,
   Modal,
   ScrollView,
-  ActivityIndicator,
 } from 'react-native';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 

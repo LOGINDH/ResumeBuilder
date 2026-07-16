@@ -1,11 +1,10 @@
-import React, {useState, useEffect, useCallback} from 'react';
+import React, {useState, useCallback} from 'react';
 import {
   ScrollView,
   View,
   TouchableOpacity,
   Modal,
   Image,
-  TextInput,
   Alert,
   FlatList,
   ActivityIndicator,
@@ -133,7 +132,7 @@ const Profile = () => {
           userData = response.user;
           await saveUserProfileLocal(userData);
         }
-      } catch (err) {
+      } catch {
         console.log('Backend unreachable, using offline profile.');
         userData = await getUserProfileLocal();
       }
@@ -153,7 +152,7 @@ const Profile = () => {
       try {
         resumesList = await resumeService.getMyResumes();
         setResumesCount(resumesList.length);
-      } catch (err) {
+      } catch {
         console.log('Failed to fetch resumes count from server.');
       }
 
@@ -208,7 +207,7 @@ const Profile = () => {
         if (response?.success && response?.user) {
           updatedUser = response.user;
         }
-      } catch (error) {
+      } catch {
         console.log('Failed to save to backend, saving offline profile.');
       }
 
@@ -257,7 +256,7 @@ const Profile = () => {
         hour: '2-digit',
         minute: '2-digit',
       });
-    } catch (e) {
+    } catch {
       return '';
     }
   };

@@ -27,7 +27,7 @@ const Splash = ({navigation}: Props) => {
           try {
             await getMe();
             navigation.replace('Main');
-          } catch (error: any) {
+          } catch {
             // Token is invalid/expired, or server is unreachable
             await removeToken();
             navigation.replace('Auth');

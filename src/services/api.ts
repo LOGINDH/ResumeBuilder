@@ -5,7 +5,7 @@ import { navigationRef } from '../navigation/navigationRef';
 
 const API = axios.create({
   // Use http://localhost:5000/api which works perfectly for iOS simulators and Android (using adb reverse tcp:5000 tcp:5000)
-  baseURL: 'http://localhost:5000/api',
+  baseURL: 'https://resumebuilder-t2yp.onrender.com/api',
   timeout: 10000,
 });
 

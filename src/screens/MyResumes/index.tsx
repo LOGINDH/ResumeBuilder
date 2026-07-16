@@ -13,8 +13,6 @@ import {ResumeCard} from '../../components/cards';
 import {resumeService} from '../../services/resume';
 import type {Resume} from '../../navigation/types';
 
-import styles from './styles';
-
 const MyResumes = () => {
   const navigation = useNavigation<any>();
   const [resumes, setResumes] = useState<Resume[]>([]);

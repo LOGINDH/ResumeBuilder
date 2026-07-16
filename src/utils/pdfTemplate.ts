@@ -40,7 +40,7 @@ const parseMultilineSection = (text?: string): ParsedItem[] => {
     if (dateLineIndex === 0) {
       left = matchedDate;
       const remaining = lines[0].replace(matchedDate, '').trim();
-      const cleanedRemaining = remaining.replace(/^[,\s\-\|()]+|[,\s\-\|()]+$/g, '').trim();
+      const cleanedRemaining = remaining.replace(/^[,\s\-|()]+|[,\s\-|()]+$/g, '').trim();
       
       if (cleanedRemaining.length > 2) {
         rightHeader = cleanedRemaining;
@@ -62,7 +62,7 @@ const parseMultilineSection = (text?: string): ParsedItem[] => {
     // Clean up parenthetical empty pairs and separators
     rightHeader = rightHeader
       .replace(/\(\s*\)/g, '')
-      .replace(/^[,\s\-\|]+|[,\s\-\|]+$/g, '')
+      .replace(/^[,\s\-|]+|[,\s\-|]+$/g, '')
       .trim();
       
     return { left, rightHeader, rightBody };

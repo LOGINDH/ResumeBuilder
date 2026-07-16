@@ -1,15 +1,40 @@
 import express from "express";
 import dotenv from "dotenv";
 import cors from "cors";
-
+import bcrypt from "bcrypt";
 
 import connectDB from "./config/db.js";
+import User from "./models/user.js";
 import authRoutes from "./routes/authRoutes.js";
 import resumeRoutes from "./routes/resumeRoutes.js";
 
 dotenv.config();
 
-connectDB();
+const seedDefaultUser = async () => {
+  try {
+    const userCount = await User.countDocuments();
+    if (userCount === 0) {
+      const hashedPassword = await bcrypt.hash("password123", 10);
+      await User.create({
+        name: "John Doe",
+        email: "user@example.com",
+        password: hashedPassword,
+        role: "Professional",
+      });
+      console.log("--------------------------------------------------");
+      console.log("Seeded default user credentials:");
+      console.log("Email: user@example.com");
+      console.log("Password: password123");
+      console.log("--------------------------------------------------");
+    }
+  } catch (err) {
+    console.log("Error seeding default user:", err.message);
+  }
+};
+
+connectDB().then(() => {
+  seedDefaultUser();
+});
 
 const app = express();
 
