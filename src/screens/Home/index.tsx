@@ -69,7 +69,7 @@ const Home = () => {
 
           <TemplateCard
             title="Modern"
-            image={require('../../assets/images/templates/modern.png')}
+            image={require('../../assets/images/templates/modern.jpg')}
             onPress={() =>
               navigation.navigate('TemplatePreview', {
                 templateId: 1,
@@ -79,7 +79,7 @@ const Home = () => {
 
           <TemplateCard
             title="Classic"
-            image={require('../../assets/images/templates/classic.png')}
+            image={require('../../assets/images/templates/classic.jpg')}
             onPress={() =>
               navigation.navigate('TemplatePreview', {
                 templateId: 2,
@@ -89,7 +89,7 @@ const Home = () => {
 
           <TemplateCard
             title="Professional"
-            image={require('../../assets/images/templates/professional.png')}
+            image={require('../../assets/images/templates/professional.jpg')}
             onPress={() =>
               navigation.navigate('TemplatePreview', {
                 templateId: 3,

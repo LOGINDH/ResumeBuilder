@@ -7,9 +7,9 @@ import {
 } from 'react-native';
 
 const TEMPLATE_IMAGES: {[key: number]: any} = {
-  1: require('../../assets/images/templates/modern.png'),
-  2: require('../../assets/images/templates/classic.png'),
-  3: require('../../assets/images/templates/professional.png'),
+  1: require('../../assets/images/templates/modern.jpg'),
+  2: require('../../assets/images/templates/classic.jpg'),
+  3: require('../../assets/images/templates/professional.jpg'),
 };
 
 import {AppScreen, AppText} from '../../components/common';
