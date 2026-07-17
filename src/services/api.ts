@@ -1,12 +1,11 @@
 import axios from 'axios';
-import { Alert } from 'react-native';
+import { Alert, Platform } from 'react-native';
 import { removeToken } from '../utils/storage';
 import { navigationRef } from '../navigation/navigationRef';
 
 const API = axios.create({
-  // Centralized production Render backend URL
   baseURL: 'https://resumebuilder-t2yp.onrender.com/api',
-  timeout: 45000, // 45 seconds to accommodate Render free-tier cold starts
+  timeout: 60000, // 60 seconds to accommodate Render free-tier cold starts
 });
 
 API.interceptors.response.use(
