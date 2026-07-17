@@ -1,6 +1,7 @@
 import React, {useEffect} from 'react';
 import {View, Image} from 'react-native';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import {AppScreen, AppText} from '../../components/common';
 import {RootStackParamList} from '../../navigation/types';
@@ -16,6 +17,10 @@ type Props = NativeStackScreenProps<
 
 const Splash = ({navigation}: Props) => {
   useEffect(() => {
+    // Clear legacy local storage keys to ensure clean start and prevent stale data leakage
+    AsyncStorage.removeItem('userProfile').catch(() => {});
+    AsyncStorage.removeItem('downloadHistory').catch(() => {});
+
     const timer = setTimeout(() => {
       getToken()
         .then(async token => {

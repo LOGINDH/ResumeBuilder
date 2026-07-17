@@ -31,6 +31,18 @@ const userSchema = new mongoose.Schema(
       type: Date,
       default: null,
     },
+    downloadHistory: [
+      {
+        resumeId: String,
+        title: String,
+        templateId: Number,
+        templateName: String,
+        downloadedAt: {
+          type: Date,
+          default: Date.now,
+        },
+      },
+    ],
   },
   { timestamps: true }
 );

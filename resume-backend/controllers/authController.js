@@ -230,3 +230,52 @@ export const resetPassword = async (req, res) => {
   }
 };
 
+// ================= ADD DOWNLOAD HISTORY =================
+export const addDownloadHistory = async (req, res) => {
+  try {
+    const { resumeId, title, templateId, templateName } = req.body;
+    const user = await User.findById(req.user.id);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    user.downloadHistory.push({
+      resumeId,
+      title,
+      templateId,
+      templateName,
+      downloadedAt: new Date(),
+    });
+
+    await user.save();
+
+    res.json({
+      success: true,
+      message: "Download logged successfully",
+      downloadHistory: user.downloadHistory,
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+// ================= CLEAR DOWNLOAD HISTORY =================
+export const clearDownloadHistory = async (req, res) => {
+  try {
+    const user = await User.findById(req.user.id);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    user.downloadHistory = [];
+    await user.save();
+
+    res.json({
+      success: true,
+      message: "Download history cleared successfully",
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+

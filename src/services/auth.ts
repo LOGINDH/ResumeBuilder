@@ -74,3 +74,38 @@ export const resetPassword = async (resetData: {
   const response = await API.post('/auth/reset-password', resetData);
   return response.data;
 };
+
+export const addDownloadHistory = async (downloadData: {
+  resumeId: string;
+  title: string;
+  templateId: number;
+  templateName: string;
+}) => {
+  const token = await getToken();
+  if (!token) {
+    throw new Error('No token found');
+  }
+
+  const response = await API.post('/auth/download-history', downloadData, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  return response.data;
+};
+
+export const clearDownloadHistory = async () => {
+  const token = await getToken();
+  if (!token) {
+    throw new Error('No token found');
+  }
+
+  const response = await API.delete('/auth/download-history', {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  return response.data;
+};

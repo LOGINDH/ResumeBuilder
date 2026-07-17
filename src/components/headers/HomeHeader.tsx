@@ -2,18 +2,26 @@ import React, {useState, useEffect} from 'react';
 import {StyleSheet, View} from 'react-native';
 import {AppText} from '../common';
 import {Theme} from '../../theme';
-import {getUserProfileLocal} from '../../utils/storage';
+import {getMe} from '../../services/auth';
 
-const HomeHeader = () => {
-  const [name, setName] = useState('LOGINDH');
+interface HomeHeaderProps {
+  name?: string;
+}
+
+const HomeHeader = ({ name }: HomeHeaderProps) => {
+  const [displayName, setDisplayName] = useState('LOGINDH');
 
   useEffect(() => {
-    getUserProfileLocal().then(user => {
-      if (user && user.name) {
-        setName(user.name);
-      }
-    });
-  }, []);
+    if (name) {
+      setDisplayName(name);
+    } else {
+      getMe().then(response => {
+        if (response?.user?.name) {
+          setDisplayName(response.user.name);
+        }
+      }).catch(() => {});
+    }
+  }, [name]);
 
   return (
     <View style={styles.container}>
@@ -25,7 +33,7 @@ const HomeHeader = () => {
         variant="h1"
         weight="700"
         style={styles.name}>
-        {name}
+        {displayName}
       </AppText>
 
       <AppText

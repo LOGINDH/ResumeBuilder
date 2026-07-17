@@ -17,15 +17,11 @@ import {launchImageLibrary} from 'react-native-image-picker';
 import {AppScreen, AppText} from '../../components/common';
 import {PrimaryButton} from '../../components/buttons';
 import {Input} from '../../components/inputs';
-import {getMe, updateMe} from '../../services/auth';
+import {getMe, updateMe, clearDownloadHistory} from '../../services/auth';
 import {resumeService} from '../../services/resume';
 import {TEMPLATES} from '../../constants/templates';
 import {
   removeToken,
-  saveUserProfileLocal,
-  getUserProfileLocal,
-  getDownloadHistoryLocal,
-  clearDownloadHistoryLocal,
   DownloadHistoryItem,
 } from '../../utils/storage';
 import {navigationRef} from '../../navigation/navigationRef';
@@ -124,18 +120,9 @@ const Profile = () => {
     try {
       setLoading(true);
 
-      // 1. Fetch user data (try API first, fallback to Local Storage)
-      let userData = null;
-      try {
-        const response = await getMe();
-        if (response?.user) {
-          userData = response.user;
-          await saveUserProfileLocal(userData);
-        }
-      } catch {
-        console.log('Backend unreachable, using offline profile.');
-        userData = await getUserProfileLocal();
-      }
+      // 1. Fetch user data (directly from API)
+      const response = await getMe();
+      const userData = response?.user;
 
       if (userData) {
         setUser(userData);
@@ -145,6 +132,8 @@ const Profile = () => {
         if (userData.avatar && !PRESET_AVATARS.some(a => a.url === userData.avatar)) {
           setCustomAvatarUrl(userData.avatar);
         }
+        // Load Download History directly from the backend user data
+        setDownloads(userData.downloadHistory || []);
       }
 
       // 2. Fetch resumes count
@@ -156,11 +145,7 @@ const Profile = () => {
         console.log('Failed to fetch resumes count from server.');
       }
 
-      // 3. Load Download History
-      const downloadHistory = await getDownloadHistoryLocal();
-      setDownloads(downloadHistory);
-
-      // 4. Calculate unique templates used
+      // 3. Calculate unique templates used
       if (resumesList.length > 0) {
         const templateIds = Array.from(new Set(resumesList.map((r: any) => r.templateId || 1)));
         const used = TEMPLATES.filter(t => templateIds.includes(t.id));
@@ -171,6 +156,7 @@ const Profile = () => {
 
     } catch (error) {
       console.log('Error loading profile data:', error);
+      Alert.alert('Error', 'Failed to load profile data from server.');
     } finally {
       setLoading(false);
     }
@@ -200,30 +186,15 @@ const Profile = () => {
         avatar: chosenAvatar,
       };
 
-      // 1. Try to update on the server
-      let updatedUser = null;
-      try {
-        const response = await updateMe(profileData);
-        if (response?.success && response?.user) {
-          updatedUser = response.user;
-        }
-      } catch {
-        console.log('Failed to save to backend, saving offline profile.');
+      // Update on the server
+      const response = await updateMe(profileData);
+      if (response?.success && response?.user) {
+        setUser(response.user);
+        setEditModalVisible(false);
+        Alert.alert('Success', 'Profile updated successfully.');
+      } else {
+        throw new Error(response?.message || 'Failed to update profile.');
       }
-
-      // 2. Local fallback if server fails
-      if (!updatedUser) {
-        updatedUser = {
-          ...user,
-          ...profileData,
-        };
-      }
-
-      // Save locally
-      await saveUserProfileLocal(updatedUser);
-      setUser(updatedUser);
-      setEditModalVisible(false);
-      Alert.alert('Success', 'Profile updated successfully.');
     } catch (error: any) {
       Alert.alert('Error', error?.message || 'Failed to update profile.');
     } finally {
@@ -238,9 +209,13 @@ const Profile = () => {
         text: 'Clear',
         style: 'destructive',
         onPress: async () => {
-          await clearDownloadHistoryLocal();
-          setDownloads([]);
-          Alert.alert('Success', 'Download history cleared.');
+          try {
+            await clearDownloadHistory();
+            setDownloads([]);
+            Alert.alert('Success', 'Download history cleared.');
+          } catch (error: any) {
+            Alert.alert('Error', error?.message || 'Failed to clear download history.');
+          }
         },
       },
     ]);

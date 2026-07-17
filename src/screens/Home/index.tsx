@@ -15,6 +15,7 @@ import {
 
 import type {Resume, RootStackParamList} from '../../navigation/types';
 import {resumeService} from '../../services/resume';
+import {getMe} from '../../services/auth';
 
 import styles from './styles';
 
@@ -23,6 +24,7 @@ type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
 const Home = () => {
   const navigation = useNavigation<NavigationProp>();
   const [resumes, setResumes] = useState<Resume[]>([]);
+  const [userName, setUserName] = useState('');
 
   useFocusEffect(
     useCallback(() => {
@@ -30,6 +32,14 @@ const Home = () => {
         .getMyResumes()
         .then(data => setResumes(data || []))
         .catch(() => setResumes([]));
+
+      getMe()
+        .then(response => {
+          if (response?.user?.name) {
+            setUserName(response.user.name);
+          }
+        })
+        .catch(() => setUserName('LOGINDH'));
     }, []),
   );
 
@@ -41,7 +51,7 @@ const Home = () => {
         style={styles.container}
         showsVerticalScrollIndicator={false}>
 
-        <HomeHeader />
+        <HomeHeader name={userName} />
 
         <HeroCard />
 

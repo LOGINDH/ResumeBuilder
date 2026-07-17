@@ -11,7 +11,7 @@ import {Theme} from '../../theme';
 import {generateResumeHtml} from '../../utils/pdfTemplate';
 import {resumeService} from '../../services/resume';
 import {downloadPdf, sharePdf} from '../../utils/nativeFile';
-import {addDownloadHistoryLocal} from '../../utils/storage';
+import {addDownloadHistory} from '../../services/auth';
 import {TEMPLATES} from '../../constants/templates';
 
 
@@ -30,11 +30,11 @@ const PdfPreview = () => {
     if (!resume) return null;
     
     const htmlContent = generateResumeHtml(resume);
-    const fileName = `Resume_${(resume.name || 'document').replace(/\s+/g, '_')}`;
+    const fileName = `${(resume.name || 'Resume').replace(/\s+/g, '_')}_${Date.now()}`;
     const options = {
       html: htmlContent,
       fileName: fileName,
-      directory: 'Documents',
+      directory: 'Downloads',
     };
 
     const file = await generatePDF(options);
@@ -51,15 +51,19 @@ const PdfPreview = () => {
       if (fileData) {
         await downloadPdf(fileData.filePath, fileData.fileName);
         
-        // Log to local download history for the profile stats
-        const tempId = resume.templateId || 1;
-        const matchedTemp = TEMPLATES.find(t => t.id === tempId);
-        await addDownloadHistoryLocal({
-          id: resume._id || `temp_${Date.now()}`,
-          title: resume.name || 'Untitled Resume',
-          templateId: tempId,
-          templateName: matchedTemp ? matchedTemp.name : 'Modern',
-        });
+        // Log to backend download history for the profile stats
+        try {
+          const tempId = resume.templateId || 1;
+          const matchedTemp = TEMPLATES.find(t => t.id === tempId);
+          await addDownloadHistory({
+            resumeId: resume._id || `temp_${Date.now()}`,
+            title: resume.name || 'Untitled Resume',
+            templateId: tempId,
+            templateName: matchedTemp ? matchedTemp.name : 'Modern',
+          });
+        } catch (logError) {
+          console.log('Failed to log download on backend:', logError);
+        }
 
         Alert.alert('Success', 'PDF downloaded successfully into your Downloads folder.');
       }
